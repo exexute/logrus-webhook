@@ -67,7 +67,7 @@ func (w *DingTalkWriter) Write(msg interface{}) error {
 		return err
 	}
 	req.URL.RawQuery = form.Encode()
-	req.Header.Set("", "")
+	req.Header.Set("Content-Type", "application/json")
 
 	hc := http.Client{}
 	resp, err := hc.Do(req)
