@@ -53,7 +53,7 @@ func (w *DingTalkWriter) Write(msg interface{}) error {
 		"access_token": []string{w.Token},
 	}
 	if w.supportSign() {
-		timestamp := time.Now().UnixNano()
+		timestamp := time.Now().UnixNano() / 1e6
 		sign := calcSign(timestamp, w.Secret)
 
 		form["timestamp"] = []string{strconv.FormatInt(timestamp, 10)}
