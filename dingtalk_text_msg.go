@@ -1,7 +1,7 @@
-package dingtalk
+package logrusWebhook
 
-type TextMsg struct {
-	Msg
+type DingTalkTextMsg struct {
+	DingTalkMsg
 	Text struct {
 		Content string `json:"content"`
 	} `json:"text"`

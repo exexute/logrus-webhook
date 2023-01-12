@@ -1,6 +1,6 @@
-package dingtalk
+package logrusWebhook
 
-type Response struct {
+type DingTalkResponse struct {
 	ErrCode int    `json:"errcode"`
 	ErrMsg  string `json:"errmsg"`
 }

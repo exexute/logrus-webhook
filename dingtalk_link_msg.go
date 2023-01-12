@@ -1,21 +1,21 @@
-package dingtalk
+package logrusWebhook
 
 import "encoding/json"
 
-type Link struct {
+type DingTalkLink struct {
 	Text       string `json:"text"`
 	Title      string `json:"title"`
 	PicUrl     string `json:"picUrl"`
 	MessageUrl string `json:"messageUrl"`
 }
 
-type LinkMsg struct {
-	Msg
-	Link *Link `json:"link"`
+type DingTalkLinkMsg struct {
+	DingTalkMsg
+	Link *DingTalkLink `json:"link"`
 }
 
-func NewLink(title, text, picUrl, messageUrl string) *Link {
-	return &Link{
+func NewDingTalkLink(title, text, picUrl, messageUrl string) *DingTalkLink {
+	return &DingTalkLink{
 		Title:      title,
 		Text:       text,
 		PicUrl:     picUrl,
@@ -23,7 +23,7 @@ func NewLink(title, text, picUrl, messageUrl string) *Link {
 	}
 }
 
-func (l *Link) String() string {
+func (l *DingTalkLink) String() string {
 	data, err := json.Marshal(l)
 	if err != nil {
 		return ""
@@ -31,8 +31,8 @@ func (l *Link) String() string {
 	return string(data)
 }
 
-func UnmarshalLink(content string) (*Link, error) {
-	link := &Link{}
+func UnmarshalDingTalkLink(content string) (*DingTalkLink, error) {
+	link := &DingTalkLink{}
 	err := json.Unmarshal([]byte(content), link)
 	if err != nil {
 		return nil, err

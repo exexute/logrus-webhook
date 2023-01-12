@@ -1,4 +1,4 @@
-module github.com/exexute/logrus.webhook
+module github.com/exexute/logrus-webhook
 
 go 1.18
 

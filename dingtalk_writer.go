@@ -1,4 +1,4 @@
-package dingtalk
+package logrusWebhook
 
 import (
 	"bytes"
@@ -17,11 +17,11 @@ import (
 )
 
 const (
-	DefaultApi     = "https://oapi.dingtalk.com"
-	UrlOfRobotSend = "robot/send"
+	DefaultDingTalkApi = "https://oapi.dingtalk.com"
+	UrlOfRobotSend     = "robot/send"
 )
 
-type Writer struct {
+type DingTalkWriter struct {
 	OpenApi   string
 	Token     string
 	Secret    string
@@ -30,8 +30,8 @@ type Writer struct {
 	mu sync.Mutex
 }
 
-func Register(openApi, token, secret string) (*Writer, error) {
-	w := &Writer{
+func RegisterDingTalkWriter(openApi, token, secret string) (*DingTalkWriter, error) {
+	w := &DingTalkWriter{
 		OpenApi:   openApi,
 		Token:     token,
 		Secret:    secret,
@@ -48,7 +48,7 @@ func Register(openApi, token, secret string) (*Writer, error) {
 	return w, nil
 }
 
-func (w *Writer) Write(msg interface{}) error {
+func (w *DingTalkWriter) Write(msg interface{}) error {
 	form := url.Values{
 		"access_token": []string{w.Token},
 	}
@@ -78,7 +78,7 @@ func (w *Writer) Write(msg interface{}) error {
 
 	defer resp.Body.Close()
 	data, _ := ioutil.ReadAll(resp.Body)
-	apiResp := &Response{}
+	apiResp := &DingTalkResponse{}
 	err = json.Unmarshal(data, resp)
 	if err != nil {
 		logrus.Errorf("[logrus.webhook.dingtalk] unmarshal api resp failure, msg: %s, api resp msg: %s, error msg: %s", string(postData), string(data), apiResp.ErrMsg)
@@ -90,12 +90,12 @@ func (w *Writer) Write(msg interface{}) error {
 	return nil
 }
 
-func (w *Writer) supportSign() bool {
+func (w *DingTalkWriter) supportSign() bool {
 	return w.Secret != ""
 }
 
-func (w *Writer) WriteTextMsg(content string, at *At) error {
-	msg := TextMsg{}
+func (w *DingTalkWriter) WriteTextMsg(content string, at *DingTalkAt) error {
+	msg := DingTalkTextMsg{}
 	msg.MsgType = "text"
 	msg.Text.Content = content
 	msg.At = at
@@ -103,12 +103,12 @@ func (w *Writer) WriteTextMsg(content string, at *At) error {
 	return w.Write(msg)
 }
 
-func (w *Writer) WriteLinkMsg(content string, at *At) error {
-	link, err := UnmarshalLink(content)
+func (w *DingTalkWriter) WriteLinkMsg(content string, at *DingTalkAt) error {
+	link, err := UnmarshalDingTalkLink(content)
 	if err != nil {
 		return err
 	}
-	msg := LinkMsg{}
+	msg := DingTalkLinkMsg{}
 	msg.MsgType = "link"
 	msg.At = at
 	msg.Link = link
@@ -116,12 +116,12 @@ func (w *Writer) WriteLinkMsg(content string, at *At) error {
 	return w.Write(msg)
 }
 
-func (w *Writer) WriteMarkdownMsg(content string, at *At) error {
-	markdown, err := UnmarshalMarkdown(content)
+func (w *DingTalkWriter) WriteMarkdownMsg(content string, at *DingTalkAt) error {
+	markdown, err := UnmarshalDingTalkMarkdown(content)
 	if err != nil {
 		return err
 	}
-	msg := MarkdownMsg{}
+	msg := DingTalkMarkdownMsg{}
 	msg.MsgType = "markdown"
 	msg.At = at
 	msg.Markdown = markdown
