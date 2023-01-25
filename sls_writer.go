@@ -33,7 +33,7 @@ func (w *SlsWriter) Write(msg string) error {
 	w.mu.Lock()
 	log := producer.GenerateLog(uint32(time.Now().Unix()), map[string]string{"content": msg})
 	w.Logs = append(w.Logs, log)
-	if !w.SupportBatch && len(w.Logs) == w.BatchSize {
+	if !w.SupportBatch || len(w.Logs) == w.BatchSize {
 		logGroup := &sls.LogGroup{
 			Source: proto.String("127.0.0.1"),
 			Logs:   []*sls.Log{log},
