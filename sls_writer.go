@@ -36,7 +36,7 @@ func (w *SlsWriter) Write(msg string) error {
 	if !w.SupportBatch || len(w.Logs) == w.BatchSize {
 		logGroup := &sls.LogGroup{
 			Source: proto.String("127.0.0.1"),
-			Logs:   []*sls.Log{log},
+			Logs:   w.Logs,
 		}
 
 		// PutLogs API Ref: https://intl.aliyun.com/help/doc-detail/29026.htm
