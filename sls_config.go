@@ -7,4 +7,5 @@ type SlsConfig struct {
 	Project         string
 	LogStore        string
 	Topic           string
+	BatchSize       int
 }
