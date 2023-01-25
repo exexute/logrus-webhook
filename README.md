@@ -132,8 +132,67 @@ func main() {
 
 ### Examples
 
-**send msg to sls logStore**
+**send log to aliyun sls immediately**
 
 ```go
+package main
 
+import (
+	logrusWebhook "github.com/exexute/logrus-webhook"
+	"github.com/sirupsen/logrus"
+)
+
+func main() {
+	slsConfig := &logrusWebhook.SlsConfig{
+		EndPoint:        "sls.endpoint",
+		AccessKeyID:     "ak",
+		AccessKeySecret: "sk",
+		Project:         "project name",
+		LogStore:        "logstore name",
+	}
+	slsHook, err := logrusWebhook.NewSlsHook(slsConfig, logrus.WarnLevel)
+	if err == nil {
+		logrus.AddHook(slsHook)
+	}
+
+	logrus.WithFields(
+		logrus.Fields{
+			"slslog": true,
+		},
+	).Warn("this is a test msg.")
+}
+```
+
+**send log to aliyun sls with batch**
+
+```go
+package main
+
+import (
+	logrusWebhook "github.com/exexute/logrus-webhook"
+	"github.com/sirupsen/logrus"
+)
+
+func main() {
+	slsConfig := &logrusWebhook.SlsConfig{
+		EndPoint:        "sls.endpoint",
+		AccessKeyID:     "ak",
+		AccessKeySecret: "sk",
+		Project:         "project name",
+		LogStore:        "logstore name",
+		BatchSize:       100,
+	}
+	slsHook, err := logrusWebhook.NewSlsHook(slsConfig, logrus.WarnLevel)
+	if err == nil {
+		logrus.AddHook(slsHook)
+	}
+
+	for j := 0; j < 100; j++ {
+		logrus.WithFields(
+			logrus.Fields{
+				"slslog": true,
+			},
+		).Warnf("this is a test msg, id: %v", j)
+	}
+}
 ```
