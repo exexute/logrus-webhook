@@ -32,12 +32,12 @@ func RegisterFeiShuWriter(url, sign string) (*FeiShuWriter, error) {
 }
 
 func (w *FeiShuWriter) Write(msg []byte) error {
+	postData := msg
 	if w.supportSign() {
 		timestamp := time.Now().UnixNano() / 1e6
 		sign := calcSign(timestamp, w.Sign)
 
-		signedMsg := &FeiShuMsg{}
-		err := json.Unmarshal(msg, signedMsg)
+		signedMsg, err := convertMsg(msg)
 		if err != nil {
 			return err
 		}
@@ -49,13 +49,13 @@ func (w *FeiShuWriter) Write(msg []byte) error {
 			}
 			textMsg.Sign = sign
 			textMsg.Timestamp = strconv.FormatInt(timestamp, 10)
-			msg, _ = json.Marshal(msg)
+			postData, _ = json.Marshal(msg)
 		}
 	}
 
 	req, err := http.NewRequest("POST", w.Url, bytes.NewBuffer(msg))
 	if err != nil {
-		logrus.Errorf("[logrus.webhook.feishu] create requrest failure, msg: %s, error msg: %s", string(msg), err.Error())
+		logrus.Errorf("[logrus.webhook.feishu] create requrest failure, msg: %s, error msg: %s", string(postData), err.Error())
 		return err
 	}
 	req.Header.Set("Content-Type", "application/json")
@@ -63,7 +63,7 @@ func (w *FeiShuWriter) Write(msg []byte) error {
 	hc := http.Client{}
 	resp, err := hc.Do(req)
 	if err != nil {
-		logrus.Errorf("[logrus.webhook.feishu] call api failure, msg: %s, error msg: %s", string(msg), err.Error())
+		logrus.Errorf("[logrus.webhook.feishu] call api failure, msg: %s, error msg: %s", string(postData), err.Error())
 		return err
 	}
 
@@ -72,11 +72,11 @@ func (w *FeiShuWriter) Write(msg []byte) error {
 	apiResp := &FeiShuResponse{}
 	err = json.Unmarshal(data, resp)
 	if err != nil {
-		logrus.Errorf("[logrus.webhook.feishu] unmarshal api resp failure, msg: %s, api resp msg: %s, error msg: %s", string(msg), string(data), apiResp.Msg)
+		logrus.Errorf("[logrus.webhook.feishu] unmarshal api resp failure, msg: %s, api resp msg: %s, error msg: %s", string(postData), string(data), apiResp.Msg)
 		return err
 	}
 	if apiResp.Code != 0 {
-		logrus.Errorf("[logrus.webhook.feishu] send notify msg failure, msg: %s, error msg: %s", string(msg), apiResp.Msg)
+		logrus.Errorf("[logrus.webhook.feishu] send notify msg failure, msg: %s, error msg: %s", string(postData), apiResp.Msg)
 	}
 	return nil
 }
