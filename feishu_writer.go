@@ -6,6 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"strconv"
 	"sync"
 	"time"
@@ -35,10 +36,9 @@ func (w *FeiShuWriter) Write(msg interface{}) error {
 	if w.supportSign() {
 		timestamp := time.Now().UnixNano() / 1e6
 		sign := calcSign(timestamp, w.Sign)
-		var signedMsg = msg.(*FeiShuMsg)
-		signedMsg.Sign = sign
-		msg.(*FeiShuMsg).Timestamp = strconv.FormatInt(timestamp, 10)
-		msg.(*FeiShuMsg).Sign = sign
+		signedMsg := reflect.ValueOf(&msg).Elem()
+		signedMsg.FieldByName("Timestamp").SetString(strconv.FormatInt(timestamp, 10))
+		signedMsg.FieldByName("Sign").SetString(sign)
 	}
 
 	postData, _ := json.Marshal(msg)
