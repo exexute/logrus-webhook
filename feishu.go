@@ -4,6 +4,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	TextMsg = "text"
+)
+
 type FeiShuHook struct {
 	Writer    *FeiShuWriter
 	LogLevels []logrus.Level
