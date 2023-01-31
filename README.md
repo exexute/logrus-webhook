@@ -42,8 +42,9 @@ func main() {
 
 	logrus.WithFields(
 		logrus.Fields{
-			"at":      logrusWebhook.NewDingTalkAt(true, nil),
-			"msgType": "text",
+			logrusWebhook.EnableDingTalk: true,
+			"msgType":                    "text",
+			"at":                         logrusWebhook.NewDingTalkAt(true, nil),
 		},
 	).Warn("this is a test msg.")
 }
@@ -68,8 +69,9 @@ func main() {
 
 	logrus.WithFields(
 		logrus.Fields{
-			"at":      logrusWebhook.NewDingTalkAt(false, []string{"<member-mobile>"}),
-			"msgType": "text",
+			logrusWebhook.EnableDingTalk: true,
+			"msgType":                    "text",
+			"at":                         logrusWebhook.NewDingTalkAt(false, []string{"<member-mobile>"}),
 		},
 	).Warn("this is a test msg.")
 }
@@ -94,8 +96,9 @@ func main() {
 
 	logrus.WithFields(
 		logrus.Fields{
-			"at":      logrusWebhook.NewDingTalkAt(false, []string{"<member-mobile>"}),
-			"msgType": "link",
+			logrusWebhook.EnableDingTalk: true,
+			"msgType":                    "link",
+			"at":                         logrusWebhook.NewDingTalkAt(false, []string{"<member-mobile>"}),
 		},
 	).Warn(logrusWebhook.NewDingTalkLink("link msg", "Cheng Xiang is a singer I like very much", "https://img.mp.itc.cn/q_70,c_zoom,w_640/upload/20170615/c37f702fb76e4e64aaa12a85e6b0ae43_th.jpg", "https://baike.baidu.com/item/%E7%A8%8B%E5%93%8D/6058905").String())
 }
@@ -120,8 +123,9 @@ func main() {
 
 	logrus.WithFields(
 		logrus.Fields{
-			"at":      logrusWebhook.NewDingTalkAt(false, []string{"<member-mobile>"}),
-			"msgType": "markdown",
+			logrusWebhook.EnableDingTalk: true,
+			"msgType":                    "markdown",
+			"at":                         logrusWebhook.NewDingTalkAt(false, []string{"<member-mobile>"}),
 		},
 	).Warn(logrusWebhook.NewDingTalkMarkdown("Cheng Xiang", "[Cheng Xiang](https://baike.baidu.com/item/%E7%A8%8B%E5%93%8D/6058905) is a singer I like very much. ![](https://img.mp.itc.cn/q_70,c_zoom,w_640/upload/20170615/c37f702fb76e4e64aaa12a85e6b0ae43_th.jpg)").String())
 }
@@ -157,7 +161,7 @@ func main() {
 
 	logrus.WithFields(
 		logrus.Fields{
-			"slslog": true,
+			logrusWebhook.EnableSlsLog: true,
 		},
 	).Warn("this is a test msg.")
 }
@@ -190,7 +194,7 @@ func main() {
 	for j := 0; j < 100; j++ {
 		logrus.WithFields(
 			logrus.Fields{
-				"slslog": true,
+				logrusWebhook.EnableSlsLog: true,
 			},
 		).Warnf("this is a test msg, id: %v", j)
 	}
