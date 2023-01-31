@@ -49,7 +49,7 @@ func (w *FeiShuWriter) Write(msg []byte) error {
 			}
 			textMsg.Sign = sign
 			textMsg.Timestamp = strconv.FormatInt(timestamp, 10)
-			postData, _ = json.Marshal(msg)
+			postData, _ = json.Marshal(textMsg)
 		}
 	}
 
