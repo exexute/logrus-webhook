@@ -2,7 +2,11 @@ package logrusWebhook
 
 import (
 	"bytes"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -35,7 +39,8 @@ func (w *FeiShuWriter) Write(msg []byte) error {
 	postData := msg
 	if w.supportSign() {
 		timestamp := time.Now().UnixNano() / 1e6
-		sign := calcSign(timestamp, w.Sign)
+		sign, err := GenSign(w.Sign, timestamp)
+		//sign := calcSign(timestamp, w.Sign)
 
 		signedMsg, err := convertMsg(msg)
 		if err != nil {
@@ -110,4 +115,19 @@ func convertTextMsg(msg []byte) (*FeiShuTextMsg, error) {
 		return nil, err
 	}
 	return signedMsg, nil
+}
+
+func GenSign(secret string, timestamp int64) (string, error) {
+	//timestamp + key 做sha256, 再进行base64 encode
+	stringToSign := fmt.Sprintf("%v", timestamp) + "\n" + secret
+
+	var data []byte
+	h := hmac.New(sha256.New, []byte(stringToSign))
+	_, err := h.Write(data)
+	if err != nil {
+		return "", err
+	}
+
+	signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
+	return signature, nil
 }
