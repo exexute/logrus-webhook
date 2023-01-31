@@ -70,13 +70,13 @@ func (w *FeiShuWriter) Write(msg []byte) error {
 	defer resp.Body.Close()
 	data, _ := ioutil.ReadAll(resp.Body)
 	apiResp := &FeiShuResponse{}
-	err = json.Unmarshal(data, resp)
+	err = json.Unmarshal(data, apiResp)
 	if err != nil {
 		logrus.Errorf("[logrus.webhook.feishu] unmarshal api resp failure, msg: %s, api resp msg: %s, error msg: %s", string(postData), string(data), apiResp.Msg)
 		return err
 	}
 	if apiResp.Code != 0 {
-		logrus.Errorf("[logrus.webhook.feishu] send notify msg failure, msg: %s, error msg: %s", string(postData), apiResp.Msg)
+		logrus.Errorf("[logrus.webhook.feishu] send notify msg failure, msg: %s, error code: %d, error msg: %s", string(postData), apiResp.Code, apiResp.Msg)
 	}
 	return nil
 }
