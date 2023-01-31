@@ -5,24 +5,28 @@ import (
 )
 
 const (
-	TextMsg = "text"
+	TextMsg      = "text"
+	EnableFeiShu = "feishu"
 )
 
 type FeiShuHook struct {
-	Writer    *FeiShuWriter
-	LogLevels []logrus.Level
+	Writer   *FeiShuWriter
+	LogLevel logrus.Level
 }
 
-func NewFeiShuHook(url, sign string, logLevels ...logrus.Level) (*FeiShuHook, error) {
+func NewFeiShuHook(url, sign string, logLevel logrus.Level) (*FeiShuHook, error) {
 	w, err := RegisterFeiShuWriter(url, sign)
-	return &FeiShuHook{w, logLevels}, err
+	return &FeiShuHook{w, logLevel}, err
 }
 
 func (hook *FeiShuHook) Levels() []logrus.Level {
-	return hook.LogLevels
+	return getLevels(hook.LogLevel)
 }
 
 func (hook *FeiShuHook) Fire(e *logrus.Entry) (err error) {
+	if _, isOk := e.Data[EnableFeiShu]; !isOk {
+		return
+	}
 	msgType, _ := e.Data["msgType"]
 	switch msgType {
 	//case "markdown":

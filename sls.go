@@ -2,22 +2,24 @@ package logrusWebhook
 
 import "github.com/sirupsen/logrus"
 
+const EnableSlsLog = "slslog"
+
 type SlsHook struct {
-	Writer    *SlsWriter
-	LogLevels []logrus.Level
+	Writer   *SlsWriter
+	LogLevel logrus.Level
 }
 
-func NewSlsHook(config *SlsConfig, logLevels ...logrus.Level) (*SlsHook, error) {
+func NewSlsHook(config *SlsConfig, logLevel logrus.Level) (*SlsHook, error) {
 	w, err := RegisterSlsWriter(config)
-	return &SlsHook{w, logLevels}, err
+	return &SlsHook{w, logLevel}, err
 }
 
-func (hook *SlsHook) Levels() []logrus.Level {
-	return hook.LogLevels
+func (hook *SlsHook) Levels() (levels []logrus.Level) {
+	return getLevels(hook.LogLevel)
 }
 
 func (hook *SlsHook) Fire(e *logrus.Entry) (err error) {
-	if _, isOk := e.Data["slslog"]; !isOk {
+	if _, isOk := e.Data[EnableSlsLog]; !isOk {
 		return
 	}
 	err = hook.Writer.Write(e.Message)

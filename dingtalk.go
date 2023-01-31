@@ -2,21 +2,26 @@ package logrusWebhook
 
 import "github.com/sirupsen/logrus"
 
+const EnableDingTalk = "dingtalk"
+
 type DingTalkHook struct {
-	Writer    *DingTalkWriter
-	LogLevels []logrus.Level
+	Writer   *DingTalkWriter
+	LogLevel logrus.Level
 }
 
-func NewDingTalkHook(openApi, token, secret string, logLevels ...logrus.Level) (*DingTalkHook, error) {
+func NewDingTalkHook(openApi, token, secret string, logLevel logrus.Level) (*DingTalkHook, error) {
 	w, err := RegisterDingTalkWriter(openApi, token, secret)
-	return &DingTalkHook{w, logLevels}, err
+	return &DingTalkHook{w, logLevel}, err
 }
 
 func (hook *DingTalkHook) Levels() []logrus.Level {
-	return hook.LogLevels
+	return getLevels(hook.LogLevel)
 }
 
 func (hook *DingTalkHook) Fire(e *logrus.Entry) (err error) {
+	if _, isOk := e.Data[EnableDingTalk]; !isOk {
+		return
+	}
 	var at *DingTalkAt
 	atValue, _ := e.Data["at"]
 	if atValue != nil {
