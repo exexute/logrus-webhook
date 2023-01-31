@@ -40,7 +40,6 @@ func (w *FeiShuWriter) Write(msg []byte) error {
 	if w.supportSign() {
 		timestamp := time.Now().UnixNano() / 1e6
 		sign, err := GenSign(w.Sign, timestamp)
-		//sign := calcSign(timestamp, w.Sign)
 
 		signedMsg, err := convertMsg(msg)
 		if err != nil {

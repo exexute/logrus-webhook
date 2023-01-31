@@ -200,3 +200,47 @@ func main() {
 	}
 }
 ```
+
+## Send Log To [FeiShu WebHook](https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/bot-v3/bot-overview)
+
+### FeiShu WebHook Robot Msg Supports
+
+- [x] text msg (default)
+- [ ] post msg
+- [ ] share_chat msg
+- [ ] image msg
+- [ ] interactive msg
+
+### Examples
+
+**send text msg without sign**
+
+```go
+package main
+
+import (
+	logrusWebhook "github.com/exexute/logrus-webhook"
+	"github.com/sirupsen/logrus"
+)
+
+func main() {
+	feiShuHook, err := logrusWebhook.NewFeiShuHook(
+		"webhook url",
+		"",
+		logrus.WarnLevel, // min log level
+	)
+	if err == nil {
+		logrus.AddHook(feiShuHook)
+	}
+
+	for j := 0; j < 100; j++ {
+		logrus.WithFields(
+			logrus.Fields{
+				logrusWebhook.EnableFeiShu: true,
+				"msgType":                  "text",
+			},
+		).Warnf("this is a test msg, id: %v", j)
+	}
+}
+
+```
