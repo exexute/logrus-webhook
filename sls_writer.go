@@ -4,7 +4,6 @@ import (
 	"fmt"
 	sls "github.com/aliyun/aliyun-log-go-sdk"
 	"github.com/aliyun/aliyun-log-go-sdk/producer"
-	"github.com/gogo/protobuf/proto"
 	"sync"
 	"time"
 )
@@ -35,15 +34,12 @@ func (w *SlsWriter) Write(msg string) error {
 	w.Logs = append(w.Logs, log)
 	if !w.SupportBatch || len(w.Logs) == w.BatchSize {
 		logGroup := &sls.LogGroup{
-			Source: proto.String("127.0.0.1"),
-			Logs:   w.Logs,
+			Logs: w.Logs,
 		}
 
 		// PutLogs API Ref: https://intl.aliyun.com/help/doc-detail/29026.htm
 		err := w.Client.PutLogs(w.Config.Project, w.Config.LogStore, logGroup)
-		if err == nil {
-			fmt.Println("PutLogs success")
-		} else {
+		if err != nil {
 			fmt.Printf("PutLogs fail, err: %s\n", err)
 		}
 
