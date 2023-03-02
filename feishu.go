@@ -24,7 +24,7 @@ func (hook *FeiShuHook) Levels() []logrus.Level {
 }
 
 func (hook *FeiShuHook) Fire(e *logrus.Entry) (err error) {
-	if enable, hasKey := e.Data[EnableFeiShu]; !(enable && hasKey) {
+	if enable, hasKey := e.Data[EnableFeiShu]; !(hasKey && enable.(bool)) {
 		return
 	}
 	msgType, _ := e.Data["msgType"]
