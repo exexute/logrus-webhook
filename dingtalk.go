@@ -19,7 +19,7 @@ func (hook *DingTalkHook) Levels() []logrus.Level {
 }
 
 func (hook *DingTalkHook) Fire(e *logrus.Entry) (err error) {
-	if _, isOk := e.Data[EnableDingTalk]; !isOk {
+	if enable, hasKey := e.Data[EnableDingTalk]; !(enable && hasKey) {
 		return
 	}
 	var at *DingTalkAt

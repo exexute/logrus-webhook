@@ -19,7 +19,7 @@ func (hook *SlsHook) Levels() (levels []logrus.Level) {
 }
 
 func (hook *SlsHook) Fire(e *logrus.Entry) (err error) {
-	if _, isOk := e.Data[EnableSlsLog]; !isOk {
+	if enable, hasKey := e.Data[EnableSlsLog]; !(hasKey && enable) {
 		return
 	}
 	err = hook.Writer.Write(e.Message)
